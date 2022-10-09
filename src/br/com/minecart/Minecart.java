@@ -9,7 +9,7 @@ import br.com.minecart.commands.MainCommand;
 
 public class Minecart extends JavaPlugin
 {
-    public final String VERSION = "2.1.0";
+    public final String VERSION = "2.2.0";
 
     public YamlConfiguration ResourceMessage;
 

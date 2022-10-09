@@ -47,11 +47,10 @@ public class MinecartAPI extends JavaPlugin
         for (JsonElement product : productsPlayer) {
             JsonObject productObj = product.getAsJsonObject();
 
+            Integer id = productObj.get("id").getAsInt();
             String key = productObj.get("key").getAsString();
-            String group = productObj.get("group").getAsString();
-            Integer duration = productObj.get("duration").getAsInt();
 
-            minecartKeys.add(new MinecartKey(key, group, duration, null));
+            minecartKeys.add(new MinecartKey(id, key, null));
         }
 
         return minecartKeys;
@@ -91,11 +90,54 @@ public class MinecartAPI extends JavaPlugin
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = jsonParser.parse(response.response).getAsJsonObject();
 
-        String group = jsonObject.get("group").getAsString();
-        Integer duration = jsonObject.get("duration").getAsInt();
+        Integer id = jsonObject.get("id").getAsInt();
         String[] commands = Utils.convertJsonArrayToStringArray(jsonObject.get("commands").getAsJsonArray());
 
-        return new MinecartKey(key, group, duration, commands);
+        return new MinecartKey(id, key, commands);
+    }
+
+    public static ArrayList<MinecartKey> deliveryPending() throws HttpRequestException
+    {
+        ArrayList<MinecartKey> minecartKeys = new ArrayList<MinecartKey>();
+
+        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/delivery/pending", null);
+
+        if (response.responseCode != 200) {
+            throw new HttpRequestException(response);
+        }
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject jsonObject = jsonParser.parse(response.response).getAsJsonObject();
+        JsonArray productsPlayer = jsonObject.getAsJsonArray("products");
+
+        for (JsonElement product : productsPlayer) {
+            JsonObject productObj = product.getAsJsonObject();
+
+            Integer id = productObj.get("id").getAsInt();
+            String key = productObj.get("key").getAsString();
+            String[] commands = Utils.convertJsonArrayToStringArray(jsonObject.get("commands").getAsJsonArray());
+
+            minecartKeys.add(new MinecartKey(id, key, commands));
+        }
+
+        return minecartKeys;
+    }
+
+    public static boolean deliveryConfirm(int[] ids)
+    {
+        Map<String, String> params = new LinkedHashMap<String, String>();
+
+        for (int id : ids) {
+            params.put("products[]", String.valueOf(id));
+        }
+
+        try {
+            HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/delivery/confirm", params);
+
+            return (response.responseCode == 200);
+        } catch (HttpRequestException e) {}
+
+        return false;
     }
 
     public static void processHttpError(Player player, HttpResponse response)
