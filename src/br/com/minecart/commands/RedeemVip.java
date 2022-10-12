@@ -59,10 +59,8 @@ public class RedeemVip implements CommandExecutor
         Boolean result = true;
 
         for (String command : minecartKey.getCommands()) {
-            command = this.parseText(command, player , minecartKey);
-
             if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
-                LOGStorage.resgatarVIP("[ERROR] Ocorreu um erro ao ATIVAR o VIP ( "+ minecartKey.getGroup() +" ) problema no comando ( " + command +" ).");
+                LOGStorage.executeCommand(command);
                 result = false;
             }
         }
@@ -89,14 +87,10 @@ public class RedeemVip implements CommandExecutor
 
         player.sendMessage(Messaging.format("error.internal-error", true, true));
         player.sendMessage(Messaging.format(message, true, false));
-
-        LOGStorage.resgatarVIP("[ERROR] Ocorreu um erro ao ATIVAR o VIP ( "+ minecartKey.getGroup() +" ) com duração de ( " + String.valueOf(minecartKey.getDuration()) + " ) DIAS para o jogador ( " + player.getName() + " ).");
     }
 
     private String parseText(String text, Player player, MinecartKey minecartKey)
     {
-        text = text.replace("{key.group}", minecartKey.getGroup());
-        text = text.replace("{key.duration}", String.valueOf(minecartKey.getDuration()));
         text = text.replace("{player.name}", player.getName());
 
         return text;

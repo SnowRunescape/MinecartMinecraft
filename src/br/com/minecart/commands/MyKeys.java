@@ -24,18 +24,16 @@ public class MyKeys implements CommandExecutor
             player.sendMessage(Messaging.format("success.player-list-keys-title", false, true));
             player.sendMessage("");
 
-            if (!minecartKeys.isEmpty()) {
+            if (minecartKeys.isEmpty()) {
+                player.sendMessage(Messaging.format("error.player-dont-have-key", false, true));
+            } else {
                 for (MinecartKey minecartKey : minecartKeys) {
                     String msg = Minecart.instance.ResourceMessage.getString("success.player-list-keys-key");
 
                     msg = msg.replace("{key.code}", minecartKey.getKey());
-                    msg = msg.replace("{key.group}", minecartKey.getGroup());
-                    msg = msg.replace("{key.duration}", String.valueOf(minecartKey.getDuration()));
 
                     player.sendMessage(Messaging.format(msg, false, false));
                 }
-            } else {
-                player.sendMessage(Messaging.format("error.player-dont-have-key", false, true));
             }
 
             return true;

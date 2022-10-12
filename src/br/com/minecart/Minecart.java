@@ -37,6 +37,8 @@ public class Minecart extends JavaPlugin
         getCommand("mykeys").setExecutor(MainCommand);
         getCommand("redeemcash").setExecutor(MainCommand);
         getCommand("redeemvip").setExecutor(MainCommand);
+
+        new Scheduler().runTaskTimerAsynchronously(this, MinecartAPI.DELAY, MinecartAPI.DELAY);
     }
 
     private void loadMessages()

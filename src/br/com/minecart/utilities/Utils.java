@@ -22,6 +22,11 @@ public class Utils
         return true;
     }
 
+    public static Boolean playerOnline(String username)
+    {
+        return false;
+    }
+
     public static String[] convertJsonArrayToStringArray(JsonArray jsonArray)
     {
         List<String> arrayList = new ArrayList<String>();
