@@ -1,4 +1,4 @@
-package br.com.minecart.utilities;
+package br.com.minecart.helpers;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ public class MinecartKeyHelper
         ArrayList<MinecartKey> tempMinecartKeys = new ArrayList<MinecartKey>();
 
         for (MinecartKey minecartKey : minecartKeys) {
-            if (Utils.playerOnline(minecartKey.getUsername())) {
+            if (PlayerHelper.playerOnline(minecartKey.getUsername())) {
                 tempMinecartKeys.add(minecartKey);
             }
         }
