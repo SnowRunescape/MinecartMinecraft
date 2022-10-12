@@ -3,6 +3,7 @@ package br.com.minecart.utilities;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,7 +25,7 @@ public class Utils
 
     public static Boolean playerOnline(String username)
     {
-        return false;
+        return Bukkit.getPlayer(username) != null;
     }
 
     public static String[] convertJsonArrayToStringArray(JsonArray jsonArray)
