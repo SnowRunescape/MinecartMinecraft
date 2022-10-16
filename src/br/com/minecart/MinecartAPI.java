@@ -20,7 +20,7 @@ import br.com.minecart.utilities.Utils;
 
 public class MinecartAPI extends JavaPlugin
 {
-    private final static String URL = "http://api.minecart.local";
+    private final static String URL = "https://api.minecart.com.br";
 
     private final static int INVALID_KEY = 40010;
     private final static int INVALID_SHOP_SERVER = 40011;
