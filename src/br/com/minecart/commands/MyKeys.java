@@ -30,7 +30,7 @@ public class MyKeys implements CommandExecutor
                 for (MinecartKey minecartKey : minecartKeys) {
                     String msg = Minecart.instance.ResourceMessage.getString("success.player-list-keys-key");
 
-                    msg = msg.replace("{key.code}", minecartKey.getKey());
+                    msg = this.parseText(msg, minecartKey);
 
                     player.sendMessage(Messaging.format(msg, false, false));
                 }
@@ -42,5 +42,13 @@ public class MyKeys implements CommandExecutor
         }
 
         return false;
+    }
+
+    private String parseText(String text, MinecartKey minecartKey)
+    {
+        text = text.replace("{key.code}", minecartKey.getKey());
+        text = text.replace("{key.product_name}", minecartKey.getProductName());
+
+        return text;
     }
 }

@@ -15,31 +15,9 @@ import br.com.minecart.Minecart;
 
 public class HttpRequest
 {
-    private static String buildPostData(Map<String, String> params)
-    {
-        StringBuilder postData = new StringBuilder();
-
-        for (Entry<String, String> param : params.entrySet()) {
-            try {
-                if (postData.length() != 0) {
-                    postData.append("&");
-                }
-
-                postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
-
-                postData.append("=");
-                postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
-            } catch(UnsupportedEncodingException e) {
-                return null;
-            }
-        }
-
-        return postData.toString();
-    }
-
     public static HttpResponse httpRequest(String Url, Map<String, String> params) throws HttpRequestException
     {
-        String response = null, urlParameters = null;
+        String urlParameters = null;
 
         if (params != null) {
             urlParameters = buildPostData(params);
@@ -60,9 +38,10 @@ public class HttpRequest
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
 
+            connection.setRequestMethod("POST");
+
             if (urlParameters != null) {
                 connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-                connection.setRequestMethod("POST");
 
                 connection.setDoOutput(true);
 
@@ -87,11 +66,33 @@ public class HttpRequest
 
             br.close();
 
-            response = sb.toString().replaceAll("\\s+", " ");
+            String response = sb.toString().replaceAll("\\s+", " ");
 
             return new HttpResponse(connection.getResponseCode(), response);
         } catch (Exception e) {
             throw new HttpRequestException(new HttpResponse(500, ""));
         }
+    }
+
+    private static String buildPostData(Map<String, String> params)
+    {
+        StringBuilder postData = new StringBuilder();
+
+        for (Entry<String, String> param : params.entrySet()) {
+            try {
+                if (postData.length() != 0) {
+                    postData.append("&");
+                }
+
+                postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+
+                postData.append("=");
+                postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+            } catch(UnsupportedEncodingException e) {
+                return null;
+            }
+        }
+
+        return postData.toString();
     }
 }

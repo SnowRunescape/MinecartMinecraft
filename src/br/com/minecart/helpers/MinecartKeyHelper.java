@@ -2,16 +2,17 @@ package br.com.minecart.helpers;
 
 import java.util.ArrayList;
 
+import br.com.minecart.AutomaticDelivery;
 import br.com.minecart.MinecartKey;
 
 public class MinecartKeyHelper
 {
-    public static ArrayList<MinecartKey> filterByPlayerOnline(ArrayList<MinecartKey> minecartKeys)
+    public static ArrayList<MinecartKey> filterByAutomaticDelivery(ArrayList<MinecartKey> minecartKeys)
     {
         ArrayList<MinecartKey> tempMinecartKeys = new ArrayList<MinecartKey>();
 
         for (MinecartKey minecartKey : minecartKeys) {
-            if (PlayerHelper.playerOnline(minecartKey.getUsername())) {
+            if (minecartKey.getAutomaitcDelivery() == AutomaticDelivery.ANYTIME || PlayerHelper.playerOnline(minecartKey.getUsername())) {
                 tempMinecartKeys.add(minecartKey);
             }
         }
