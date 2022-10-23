@@ -16,7 +16,7 @@ import br.com.minecart.storage.LOGStorage;
 import br.com.minecart.utilities.HttpRequestException;
 import br.com.minecart.utilities.Messaging;
 
-public class RedeemVip implements CommandExecutor
+public class RedeemKey implements CommandExecutor
 {
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
@@ -35,17 +35,17 @@ public class RedeemVip implements CommandExecutor
         String key = args[0];
 
         try {
-            MinecartKey minecartKey = MinecartAPI.redeemVip(player, key);
-            this.deliverVip(player, minecartKey);
+            MinecartKey minecartKey = MinecartAPI.redeemKey(player, key);
+            this.delivery(player, minecartKey);
             return true;
-        } catch(HttpRequestException e) {
+        } catch (HttpRequestException e) {
             MinecartAPI.processHttpError(player, e.getResponse());
         }
 
         return false;
     }
 
-    private void deliverVip(Player player, MinecartKey minecartKey)
+    private void delivery(Player player, MinecartKey minecartKey)
     {
         if (this.executeCommands(player, minecartKey)) {
             this.sendMessageSuccessful(player, minecartKey);
@@ -82,7 +82,7 @@ public class RedeemVip implements CommandExecutor
 
     private void sendMessageFailed(Player player, MinecartKey minecartKey)
     {
-        String message = Minecart.instance.ResourceMessage.getString("error.redeem-vip");
+        String message = Minecart.instance.ResourceMessage.getString("error.redeem-key");
         message = this.parseText(message, player, minecartKey);
 
         player.sendMessage(Messaging.format("error.internal-error", true, true));
@@ -92,6 +92,7 @@ public class RedeemVip implements CommandExecutor
     private String parseText(String text, Player player, MinecartKey minecartKey)
     {
         text = text.replace("{player.name}", player.getName());
+        text = text.replace("{key.product_name}", minecartKey.getProductName());
 
         return text;
     }

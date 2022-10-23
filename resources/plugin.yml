@@ -16,6 +16,6 @@ commands:
     redeemcash:
         description: redeem cash purchased
         aliases: [resgatarcash]
-    redeemvip:
-        description: redeem vip purchased
-        aliases: [resgatarvip]
+    redeemkey:
+        description: redeem key purchased
+        aliases: [redeemvip, resgatarvip, resgatarkey]

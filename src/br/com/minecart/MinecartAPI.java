@@ -80,7 +80,7 @@ public class MinecartAPI extends JavaPlugin
         return new MinecartCash(quantity, command);
     }
 
-    public static MinecartKey redeemVip(Player player, String key) throws HttpRequestException
+    public static MinecartKey redeemKey(Player player, String key) throws HttpRequestException
     {
         String username = player.getName();
 
@@ -88,19 +88,20 @@ public class MinecartAPI extends JavaPlugin
         params.put("username", username);
         params.put("key", key);
 
-        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/player/redeemvip", params);
+        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/player/redeemkey", params);
 
         if (response.responseCode != 200) {
             throw new HttpRequestException(response);
         }
 
         JsonParser jsonParser = new JsonParser();
-        JsonObject jsonObject = jsonParser.parse(response.response).getAsJsonObject();
+        JsonObject productObj = jsonParser.parse(response.response).getAsJsonObject();
 
-        Integer id = jsonObject.get("id").getAsInt();
-        String[] commands = Utils.convertJsonArrayToStringArray(jsonObject.get("commands").getAsJsonArray());
+        Integer id = productObj.get("id").getAsInt();
+        String productName = productObj.get("product_name").getAsString();
+        String[] commands = Utils.convertJsonArrayToStringArray(productObj.get("commands").getAsJsonArray());
 
-        return new MinecartKey(id, null, username, key, commands, 0);
+        return new MinecartKey(id, productName, username, key, commands, 0);
     }
 
     public static ArrayList<MinecartKey> deliveryPending() throws HttpRequestException
@@ -160,28 +161,30 @@ public class MinecartAPI extends JavaPlugin
             return;
         }
 
+        String message = Messaging.format("error.internal-error", false, true);
+
         try {
             JsonParser jsonParser = new JsonParser();
             JsonObject jsonObject = jsonParser.parse(response.response).getAsJsonObject();
 
             Integer errorCode = jsonObject.get("code").getAsInt();
 
-            if (errorCode == INVALID_KEY) {
-                String kickMessage = Messaging.format("error.invalid-key", true, true);
-                kickMessage = kickMessage.replace("\\n", "\n");
-
-                player.kickPlayer(kickMessage);
-            } else if (errorCode == INVALID_SHOP_SERVER) {
-                player.sendMessage(Messaging.format("error.invalid-shopserver", false, true));
-            } else if (errorCode == DONT_HAVE_CASH) {
-                player.sendMessage(Messaging.format("error.nothing-products-cash", false, true));
-            } else if (errorCode == COMMANDS_NOT_REGISTRED) {
-                player.sendMessage(Messaging.format("error.commands-product-not-registred", false, true));
-            } else {
-                player.sendMessage(Messaging.format("error.internal-error", false, true));
+            switch (errorCode) {
+                case INVALID_KEY:
+                    message = Messaging.format("error.invalid-key", false, true);
+                    break;
+                case INVALID_SHOP_SERVER:
+                    message = Messaging.format("error.invalid-shopserver", false, true);
+                    break;
+                case DONT_HAVE_CASH:
+                    message = Messaging.format("error.nothing-products-cash", false, true);
+                    break;
+                case COMMANDS_NOT_REGISTRED:
+                    message = Messaging.format("error.commands-product-not-registred", false, true);
+                    break;
             }
-        } catch(Exception e) {
-            player.sendMessage(Messaging.format("error.internal-error", false, true));
-        }
+        } catch (Exception e) {}
+        
+        player.sendMessage(message);
     }
 }
