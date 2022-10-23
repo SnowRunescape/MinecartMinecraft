@@ -12,7 +12,7 @@ public class MinecartKeyHelper
         ArrayList<MinecartKey> tempMinecartKeys = new ArrayList<MinecartKey>();
 
         for (MinecartKey minecartKey : minecartKeys) {
-            if (minecartKey.getAutomaitcDelivery() == AutomaticDelivery.ANYTIME || PlayerHelper.playerOnline(minecartKey.getUsername())) {
+            if (minecartKey.getDeliveryAutomaitc() == AutomaticDelivery.ANYTIME || PlayerHelper.playerOnline(minecartKey.getUsername())) {
                 tempMinecartKeys.add(minecartKey);
             }
         }

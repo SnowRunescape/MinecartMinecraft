@@ -82,8 +82,10 @@ public class MinecartAPI extends JavaPlugin
 
     public static MinecartKey redeemVip(Player player, String key) throws HttpRequestException
     {
+        String username = player.getName();
+
         Map<String, String> params = new LinkedHashMap<String, String>();
-        params.put("username", player.getName());
+        params.put("username", username);
         params.put("key", key);
 
         HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/player/redeemvip", params);
@@ -96,7 +98,6 @@ public class MinecartAPI extends JavaPlugin
         JsonObject jsonObject = jsonParser.parse(response.response).getAsJsonObject();
 
         Integer id = jsonObject.get("id").getAsInt();
-        String username = jsonObject.get("username").getAsString();
         String[] commands = Utils.convertJsonArrayToStringArray(jsonObject.get("commands").getAsJsonArray());
 
         return new MinecartKey(id, null, username, key, commands, 0);
@@ -124,9 +125,9 @@ public class MinecartAPI extends JavaPlugin
             String productName = productObj.get("product_name").getAsString();
             String key = productObj.get("key").getAsString();
             String[] commands = Utils.convertJsonArrayToStringArray(productObj.get("commands").getAsJsonArray());
-            int automaticDelivery = productObj.get("automatic_delivery").getAsInt();
+            int deliveryAutomatic = productObj.get("delivery_automatic").getAsInt();
 
-            minecartKeys.add(new MinecartKey(id, productName, username, key, commands, automaticDelivery));
+            minecartKeys.add(new MinecartKey(id, productName, username, key, commands, deliveryAutomatic));
         }
 
         return minecartKeys;

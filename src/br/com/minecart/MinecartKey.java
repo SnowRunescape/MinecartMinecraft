@@ -7,16 +7,16 @@ public class MinecartKey
     private String username;
     private String key;
     private String[] commands;
-    private int automaticDelivery;
+    private int deliveryAutomatic;
 
-    public MinecartKey(int id, String productName, String username, String key, String[] commands, int automaticDelivery)
+    public MinecartKey(int id, String productName, String username, String key, String[] commands, int deliveryAutomatic)
     {
         this.id = id;
         this.productName = productName;
         this.username = username;
         this.key = key;
         this.commands = commands;
-        this.automaticDelivery = automaticDelivery;
+        this.deliveryAutomatic = deliveryAutomatic;
     }
 
     public int getId()
@@ -44,8 +44,8 @@ public class MinecartKey
         return this.commands;
     }
 
-    public int getAutomaitcDelivery()
+    public int getDeliveryAutomaitc()
     {
-        return this.automaticDelivery;
+        return this.deliveryAutomatic;
     }
 }
