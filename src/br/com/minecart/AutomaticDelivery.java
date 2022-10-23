@@ -3,6 +3,7 @@ package br.com.minecart;
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import br.com.minecart.helpers.MinecartKeyHelper;
 import br.com.minecart.storage.LOGStorage;
@@ -16,37 +17,35 @@ public class AutomaticDelivery
 
     public void run()
     {
-        Minecart.instance.getLogger().info("Buscando produtos pendentes para ser entregue...");
-
         try {
             ArrayList<MinecartKey> minecartKeys = MinecartKeyHelper.filterByAutomaticDelivery(MinecartAPI.deliveryPending());
 
             if (minecartKeys.isEmpty()) {
-                Minecart.instance.getLogger().info("Nenhum produto para ser entregue.");
                 return;
             }
 
             MinecartAPI.deliveryConfirm(MinecartKeyHelper.getMinecartKeyIds(minecartKeys));
 
-            Minecart.instance.getLogger().info("Realizado a confirmacao das entregas.");
-            Minecart.instance.getLogger().info("Iniciando entregas...");
-
             for (MinecartKey minecartKey : minecartKeys) {
                 this.executeCommands(minecartKey);
             }
-
-            Minecart.instance.getLogger().info("Entregas feitas com sucesso.");
         } catch (HttpRequestException e) {
-            e.printStackTrace();
+            String message = MinecartAPI.messageHttpError(Minecart.instance.getServer().getConsoleSender(), e.getResponse());
+
+            Bukkit.getConsoleSender().sendMessage(message);
         }
     }
 
     private void executeCommands(MinecartKey minecartKey)
     {
-        for (String command : minecartKey.getCommands()) {
-            if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
-                LOGStorage.executeCommand(command);
-            }
+        for (final String command : minecartKey.getCommands()) {
+            Bukkit.getScheduler().runTask(Minecart.instance, new BukkitRunnable() {
+                public void run() {
+                    if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
+                        LOGStorage.executeCommand(command);
+                    }
+                }
+            });
         }
     }
 }

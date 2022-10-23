@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -153,15 +154,20 @@ public class MinecartAPI extends JavaPlugin
 
     public static void processHttpError(Player player, HttpResponse response)
     {
-        if (!player.hasPermission("minecart.admin")) {
-            player.sendMessage(Messaging.format("error.internal-error", false, true));
-            return;
-        } else if (response.responseCode == 401) {
-            player.sendMessage(Messaging.format("error.invalid-shopkey", false, true));
-            return;
+        String message = MinecartAPI.messageHttpError(player, response);
+
+        if (response.responseCode == 401 && !player.hasPermission("minecart.admin")) {
+            message =  Messaging.format("error.internal-error", false, true);
         }
 
-        String message = Messaging.format("error.internal-error", false, true);
+        player.sendMessage(message);
+    }
+
+    public static String messageHttpError(CommandSender player, HttpResponse response)
+    {
+        if (response.responseCode == 401) {
+            return Messaging.format("error.invalid-shopkey", false, true);
+        }
 
         try {
             JsonParser jsonParser = new JsonParser();
@@ -171,20 +177,18 @@ public class MinecartAPI extends JavaPlugin
 
             switch (errorCode) {
                 case INVALID_KEY:
-                    message = Messaging.format("error.invalid-key", false, true);
-                    break;
+                    return Messaging.format("error.invalid-key", false, true);
                 case INVALID_SHOP_SERVER:
-                    message = Messaging.format("error.invalid-shopserver", false, true);
-                    break;
+                    return player.hasPermission("minecart.admin") ?
+                        Messaging.format("error.invalid-shopserver", false, true) :
+                        Messaging.format("error.internal-error", false, true);
                 case DONT_HAVE_CASH:
-                    message = Messaging.format("error.nothing-products-cash", false, true);
-                    break;
+                    return Messaging.format("error.nothing-products-cash", false, true);
                 case COMMANDS_NOT_REGISTRED:
-                    message = Messaging.format("error.commands-product-not-registred", false, true);
-                    break;
+                    return Messaging.format("error.commands-product-not-registred", false, true);
             }
         } catch (Exception e) {}
-        
-        player.sendMessage(message);
+
+        return Messaging.format("error.internal-error", false, true);
     }
 }
