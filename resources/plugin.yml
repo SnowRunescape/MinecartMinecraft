@@ -11,7 +11,7 @@ commands:
         description: list version and commands
         aliases: []
     mykeys:
-        description: list with all the vip keys the player has to activate
+        description: list with all the keys the player has to activate
         aliases: [minhaskeys]
     redeemcash:
         description: redeem cash purchased
