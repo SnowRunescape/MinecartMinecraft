@@ -3,6 +3,7 @@ package br.com.minecart.helpers;
 import java.util.ArrayList;
 
 import br.com.minecart.AutomaticDelivery;
+import br.com.minecart.Minecart;
 import br.com.minecart.MinecartKey;
 
 public class MinecartKeyHelper
@@ -12,7 +13,16 @@ public class MinecartKeyHelper
         ArrayList<MinecartKey> tempMinecartKeys = new ArrayList<MinecartKey>();
 
         for (MinecartKey minecartKey : minecartKeys) {
-            if (minecartKey.getDeliveryAutomaitc() == AutomaticDelivery.ANYTIME || PlayerHelper.playerOnline(minecartKey.getUsername())) {
+            if (
+                    minecartKey.getDeliveryAutomaitc() == AutomaticDelivery.ANYTIME || (
+                            !Minecart.instance.preventLoginDelivery &&
+                            PlayerHelper.playerOnline(minecartKey.getUsername())
+                    ) || (
+                            Minecart.instance.preventLoginDelivery &&
+                            PlayerHelper.playerOnline(minecartKey.getUsername()) &&
+                            PlayerHelper.playerTimeOnline(minecartKey.getUsername()) > Minecart.instance.TIME_PREVENT_LOGIN_DELIVERY
+                    )
+            ) {
                 tempMinecartKeys.add(minecartKey);
             }
         }
