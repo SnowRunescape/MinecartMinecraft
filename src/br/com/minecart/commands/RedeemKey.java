@@ -11,12 +11,12 @@ import org.bukkit.entity.Player;
 import br.com.minecart.Minecart;
 import br.com.minecart.MinecartAPI;
 import br.com.minecart.MinecartKey;
+import br.com.minecart.helpers.PlayerHelper;
 import br.com.minecart.storage.LOGStorage;
 import br.com.minecart.utilities.HttpRequestException;
 import br.com.minecart.utilities.Messaging;
-import br.com.minecart.utilities.Utils;
 
-public class RedeemVip implements CommandExecutor
+public class RedeemKey implements CommandExecutor
 {
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)
     {
@@ -27,7 +27,7 @@ public class RedeemVip implements CommandExecutor
             return false;
         }
 
-        if (Minecart.instance.getConfig().getBoolean("config.force_clean_inventry", true) && !Utils.playerInventoryClean(player)) {
+        if (Minecart.instance.getConfig().getBoolean("config.force_clean_inventry", true) && !PlayerHelper.playerInventoryClean(player)) {
             player.sendMessage(Messaging.format("error.clean-inventory", true, true));
             return false;
         }
@@ -35,17 +35,17 @@ public class RedeemVip implements CommandExecutor
         String key = args[0];
 
         try {
-            MinecartKey minecartKey = MinecartAPI.redeemVip(player, key);
-            this.deliverVip(player, minecartKey);
+            MinecartKey minecartKey = MinecartAPI.redeemKey(player, key);
+            this.delivery(player, minecartKey);
             return true;
-        } catch(HttpRequestException e) {
+        } catch (HttpRequestException e) {
             MinecartAPI.processHttpError(player, e.getResponse());
         }
 
         return false;
     }
 
-    private void deliverVip(Player player, MinecartKey minecartKey)
+    private void delivery(Player player, MinecartKey minecartKey)
     {
         if (this.executeCommands(player, minecartKey)) {
             this.sendMessageSuccessful(player, minecartKey);
@@ -59,10 +59,8 @@ public class RedeemVip implements CommandExecutor
         Boolean result = true;
 
         for (String command : minecartKey.getCommands()) {
-            command = this.parseText(command, player , minecartKey);
-
             if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
-                LOGStorage.resgatarVIP("[ERROR] Ocorreu um erro ao ATIVAR o VIP ( "+ minecartKey.getGroup() +" ) problema no comando ( " + command +" ).");
+                LOGStorage.executeCommand(command);
                 result = false;
             }
         }
@@ -84,20 +82,17 @@ public class RedeemVip implements CommandExecutor
 
     private void sendMessageFailed(Player player, MinecartKey minecartKey)
     {
-        String message = Minecart.instance.ResourceMessage.getString("error.redeem-vip");
+        String message = Minecart.instance.ResourceMessage.getString("error.redeem-key");
         message = this.parseText(message, player, minecartKey);
 
         player.sendMessage(Messaging.format("error.internal-error", true, true));
         player.sendMessage(Messaging.format(message, true, false));
-
-        LOGStorage.resgatarVIP("[ERROR] Ocorreu um erro ao ATIVAR o VIP ( "+ minecartKey.getGroup() +" ) com duração de ( " + String.valueOf(minecartKey.getDuration()) + " ) DIAS para o jogador ( " + player.getName() + " ).");
     }
 
     private String parseText(String text, Player player, MinecartKey minecartKey)
     {
-        text = text.replace("{key.group}", minecartKey.getGroup());
-        text = text.replace("{key.duration}", String.valueOf(minecartKey.getDuration()));
         text = text.replace("{player.name}", player.getName());
+        text = text.replace("{key.product_name}", minecartKey.getProductName());
 
         return text;
     }

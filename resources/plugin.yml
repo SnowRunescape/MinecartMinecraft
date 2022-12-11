@@ -1,5 +1,5 @@
 name: Minecart
-version: 2.1.0
+version: 2.2.0
 description: plugin responsible for managing the payment orders made by the Minecart
 author: [SnowRunescape]
 website: https://minecart.com.br
@@ -11,11 +11,11 @@ commands:
         description: list version and commands
         aliases: []
     mykeys:
-        description: list with all the vip keys the player has to activate
+        description: list with all the keys the player has to activate
         aliases: [minhaskeys]
     redeemcash:
         description: redeem cash purchased
         aliases: [resgatarcash]
-    redeemvip:
-        description: redeem vip purchased
-        aliases: [resgatarvip]
+    redeemkey:
+        description: redeem key purchased
+        aliases: [redeemvip, resgatarvip, resgatarkey]

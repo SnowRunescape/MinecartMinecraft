@@ -31,8 +31,10 @@ public class MainCommand implements CommandExecutor
         CommandMap.put("redeemcash", new RedeemCash());
         CommandMap.put("resgatarcash", new RedeemCash());
 
-        CommandMap.put("redeemvip", new RedeemVip());
-        CommandMap.put("resgatarvip", new RedeemVip());
+        CommandMap.put("redeemvip", new RedeemKey());
+        CommandMap.put("resgatarvip", new RedeemKey());
+        CommandMap.put("redeemkey", new RedeemKey());
+        CommandMap.put("resgatarkey", new RedeemKey());
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args)

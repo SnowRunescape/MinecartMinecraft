@@ -34,6 +34,10 @@ public class Minecart implements CommandExecutor
 
     private boolean reloadConfig(CommandSender sender)
     {
+        if (!sender.hasPermission("minecart.admin")) {
+            return false;
+        }
+
         sender.sendMessage("§9[Minecart] §fConfigurações recarregadas com sucesso");
 
         br.com.minecart.Minecart.instance.reloadConfig();

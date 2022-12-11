@@ -7,24 +7,12 @@ import java.util.TimeZone;
 
 public class LOGStorage
 {
-    public static void resgatarVIP(String log)
+    public static void executeCommand(String command)
     {
         try {
-            FileWriter buffWrite = new FileWriter("plugins/Minecart/RedeemVIP_error.log", true);
+            FileWriter buffWrite = new FileWriter("plugins/Minecart/error.log", true);
 
-            buffWrite.write("[" + LOGStorage.date() + "] " + log + "\n");
-            buffWrite.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void resgatarCASH(String log)
-    {
-        try {
-            FileWriter buffWrite = new FileWriter("plugins/Minecart/RedeemCASH_error.log", true);
-
-            buffWrite.write("[" + LOGStorage.date() + "] " + log + "\n");
+            buffWrite.write("[" + LOGStorage.date() + "] [ERROR] Ocorreu um erro ao executar o comando ( " + command + " )\n");
             buffWrite.close();
         } catch (IOException e) {
             e.printStackTrace();

@@ -34,7 +34,7 @@ public class RedeemCash implements CommandExecutor
 
     private boolean deliverCash(Player player, MinecartCash minecartCash)
     {
-        String command = this.parseText(minecartCash.getCommand(), player , minecartCash);
+        String command = minecartCash.getCommand();
 
         if (Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
             String msg = Minecart.instance.ResourceMessage.getString("success.redeem-cash");
@@ -49,15 +49,13 @@ public class RedeemCash implements CommandExecutor
             player.sendMessage(Messaging.format("error.internal-error", true, true));
             player.sendMessage(Messaging.format(msg, true, false));
 
-            LOGStorage.resgatarCASH("[ERROR] Ocorreu um erro ao dar ( "+ String.valueOf(minecartCash.getQuantity()) +" ) de CASH para o jogador ( " + player.getName() + " ).");
+            LOGStorage.executeCommand(command);
             return false;
         }
     }
 
     private String parseText(String text, Player player, MinecartCash minecartCash)
     {
-        text = text.replace("{cash.quantity}", String.valueOf(minecartCash.getQuantity()));
-        text = text.replace("{cash.amount}", String.valueOf(minecartCash.getQuantity()));
         text = text.replace("{player.name}", player.getName());
 
         return text;

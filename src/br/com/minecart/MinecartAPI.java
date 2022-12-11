@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,12 +28,14 @@ public class MinecartAPI extends JavaPlugin
     private final static int DONT_HAVE_CASH = 40012;
     private final static int COMMANDS_NOT_REGISTRED = 40013;
 
+    public final static long DELAY = 60 * 20L;
+
     public static ArrayList<MinecartKey> myKeys(Player player) throws Exception
     {
-        ArrayList<MinecartKey> minecartKeys = new ArrayList<MinecartKey>();
+        String username = player.getName();
 
         Map<String, String> params = new LinkedHashMap<String, String>();
-        params.put("username", player.getName());
+        params.put("username", username);
 
         HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/player/mykeys", params);
 
@@ -44,14 +47,16 @@ public class MinecartAPI extends JavaPlugin
         JsonObject jsonObject = jsonParser.parse(response.response).getAsJsonObject();
         JsonArray productsPlayer = jsonObject.getAsJsonArray("products");
 
+        ArrayList<MinecartKey> minecartKeys = new ArrayList<MinecartKey>();
+
         for (JsonElement product : productsPlayer) {
             JsonObject productObj = product.getAsJsonObject();
 
+            Integer id = productObj.get("id").getAsInt();
             String key = productObj.get("key").getAsString();
-            String group = productObj.get("group").getAsString();
-            Integer duration = productObj.get("duration").getAsInt();
+            String productName = productObj.get("product_name").getAsString();
 
-            minecartKeys.add(new MinecartKey(key, group, duration, null));
+            minecartKeys.add(new MinecartKey(id, productName, username, key, null, 0));
         }
 
         return minecartKeys;
@@ -76,13 +81,35 @@ public class MinecartAPI extends JavaPlugin
         return new MinecartCash(quantity, command);
     }
 
-    public static MinecartKey redeemVip(Player player, String key) throws HttpRequestException
+    public static MinecartKey redeemKey(Player player, String key) throws HttpRequestException
     {
+        String username = player.getName();
+
         Map<String, String> params = new LinkedHashMap<String, String>();
-        params.put("username", player.getName());
+        params.put("username", username);
         params.put("key", key);
 
-        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/player/redeemvip", params);
+        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/player/redeemkey", params);
+
+        if (response.responseCode != 200) {
+            throw new HttpRequestException(response);
+        }
+
+        JsonParser jsonParser = new JsonParser();
+        JsonObject productObj = jsonParser.parse(response.response).getAsJsonObject();
+
+        Integer id = productObj.get("id").getAsInt();
+        String productName = productObj.get("product_name").getAsString();
+        String[] commands = Utils.convertJsonArrayToStringArray(productObj.get("commands").getAsJsonArray());
+
+        return new MinecartKey(id, productName, username, key, commands, 0);
+    }
+
+    public static ArrayList<MinecartKey> deliveryPending() throws HttpRequestException
+    {
+        ArrayList<MinecartKey> minecartKeys = new ArrayList<MinecartKey>();
+
+        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/delivery/pending", null);
 
         if (response.responseCode != 200) {
             throw new HttpRequestException(response);
@@ -90,22 +117,56 @@ public class MinecartAPI extends JavaPlugin
 
         JsonParser jsonParser = new JsonParser();
         JsonObject jsonObject = jsonParser.parse(response.response).getAsJsonObject();
+        JsonArray productsPlayer = jsonObject.getAsJsonArray("products");
 
-        String group = jsonObject.get("group").getAsString();
-        Integer duration = jsonObject.get("duration").getAsInt();
-        String[] commands = Utils.convertJsonArrayToStringArray(jsonObject.get("commands").getAsJsonArray());
+        for (JsonElement product : productsPlayer) {
+            JsonObject productObj = product.getAsJsonObject();
 
-        return new MinecartKey(key, group, duration, commands);
+            Integer id = productObj.get("id").getAsInt();
+            String username = productObj.get("username").getAsString();
+            String productName = productObj.get("product_name").getAsString();
+            String key = productObj.get("key").getAsString();
+            String[] commands = Utils.convertJsonArrayToStringArray(productObj.get("commands").getAsJsonArray());
+            int deliveryAutomatic = productObj.get("delivery_automatic").getAsInt();
+
+            minecartKeys.add(new MinecartKey(id, productName, username, key, commands, deliveryAutomatic));
+        }
+
+        return minecartKeys;
+    }
+
+    public static boolean deliveryConfirm(int[] ids)
+    {
+        Map<String, String> params = new LinkedHashMap<String, String>();
+
+        for (int id : ids) {
+            params.put("products[]", String.valueOf(id));
+        }
+
+        try {
+            HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/delivery/confirm", params);
+
+            return (response.responseCode == 200);
+        } catch (HttpRequestException e) {}
+
+        return false;
     }
 
     public static void processHttpError(Player player, HttpResponse response)
     {
-        if (!player.hasPermission("minecart.admin")) {
-            player.sendMessage(Messaging.format("error.internal-error", false, true));
-            return;
-        } else if (response.responseCode == 401) {
-            player.sendMessage(Messaging.format("error.invalid-shopkey", false, true));
-            return;
+        String message = MinecartAPI.messageHttpError(player, response);
+
+        if (response.responseCode == 401 && !player.hasPermission("minecart.admin")) {
+            message =  Messaging.format("error.internal-error", false, true);
+        }
+
+        player.sendMessage(message);
+    }
+
+    public static String messageHttpError(CommandSender player, HttpResponse response)
+    {
+        if (response.responseCode == 401) {
+            return Messaging.format("error.invalid-shopkey", false, true);
         }
 
         try {
@@ -114,22 +175,20 @@ public class MinecartAPI extends JavaPlugin
 
             Integer errorCode = jsonObject.get("code").getAsInt();
 
-            if (errorCode == INVALID_KEY) {
-                String kickMessage = Messaging.format("error.invalid-key", true, true);
-                kickMessage = kickMessage.replace("\\n", "\n");
-
-                player.kickPlayer(kickMessage);
-            } else if (errorCode == INVALID_SHOP_SERVER) {
-                player.sendMessage(Messaging.format("error.invalid-shopserver", false, true));
-            } else if (errorCode == DONT_HAVE_CASH) {
-                player.sendMessage(Messaging.format("error.nothing-products-cash", false, true));
-            } else if (errorCode == COMMANDS_NOT_REGISTRED) {
-                player.sendMessage(Messaging.format("error.commands-product-not-registred", false, true));
-            } else {
-                player.sendMessage(Messaging.format("error.internal-error", false, true));
+            switch (errorCode) {
+                case INVALID_KEY:
+                    return Messaging.format("error.invalid-key", false, true);
+                case INVALID_SHOP_SERVER:
+                    return player.hasPermission("minecart.admin") ?
+                        Messaging.format("error.invalid-shopserver", false, true) :
+                        Messaging.format("error.internal-error", false, true);
+                case DONT_HAVE_CASH:
+                    return Messaging.format("error.nothing-products-cash", false, true);
+                case COMMANDS_NOT_REGISTRED:
+                    return Messaging.format("error.commands-product-not-registred", false, true);
             }
-        } catch(Exception e) {
-            player.sendMessage(Messaging.format("error.internal-error", false, true));
-        }
+        } catch (Exception e) {}
+
+        return Messaging.format("error.internal-error", false, true);
     }
 }

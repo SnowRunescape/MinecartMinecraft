@@ -2,17 +2,36 @@ package br.com.minecart;
 
 public class MinecartKey
 {
+    private int id;
+    private String productName;
+    private String username;
     private String key;
-    private String group;
-    private int duration;
     private String[] commands;
+    private int deliveryAutomatic;
 
-    public MinecartKey(String key, String group, int duration, String[] commands)
+    public MinecartKey(int id, String productName, String username, String key, String[] commands, int deliveryAutomatic)
     {
+        this.id = id;
+        this.productName = productName;
+        this.username = username;
         this.key = key;
-        this.group = group;
-        this.duration = duration;
         this.commands = commands;
+        this.deliveryAutomatic = deliveryAutomatic;
+    }
+
+    public int getId()
+    {
+        return this.id;
+    }
+
+    public String getProductName()
+    {
+        return this.productName;
+    }
+
+    public String getUsername()
+    {
+        return this.username;
     }
 
     public String getKey()
@@ -20,18 +39,13 @@ public class MinecartKey
         return this.key;
     }
 
-    public String getGroup()
-    {
-        return this.group;
-    }
-
-    public int getDuration()
-    {
-        return this.duration;
-    }
-
     public String[] getCommands()
     {
         return this.commands;
+    }
+
+    public int getDeliveryAutomaitc()
+    {
+        return this.deliveryAutomatic;
     }
 }
