@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.minecart.commands.MainCommand;
@@ -34,6 +35,7 @@ public class Minecart extends JavaPlugin
         }
 
         this.loadMessages();
+        this.loadCooldownToPlayersOnline();
 
         this.MinecartAutorization = getConfig().getString("Minecart.ShopKey", "");
         this.MinecartShopServer = getConfig().getString("Minecart.ShopServer", "");
@@ -60,5 +62,15 @@ public class Minecart extends JavaPlugin
         }
 
         this.ResourceMessage = YamlConfiguration.loadConfiguration(resourceMessage);
+    }
+
+    private void loadCooldownToPlayersOnline()
+    {
+        Player[] players = getServer().getOnlinePlayers();
+
+        for (Player player : players) {
+            String username = player.getName().toLowerCase();
+            this.cooldown.put(username, System.currentTimeMillis());
+        }
     }
 }
