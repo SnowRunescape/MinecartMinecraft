@@ -14,14 +14,14 @@ public class MinecartKeyHelper
 
         for (MinecartKey minecartKey : minecartKeys) {
             if (
-                    minecartKey.getDeliveryAutomaitc() == AutomaticDelivery.ANYTIME || (
-                            !Minecart.instance.preventLoginDelivery &&
-                            PlayerHelper.playerOnline(minecartKey.getUsername())
-                    ) || (
-                            Minecart.instance.preventLoginDelivery &&
-                            PlayerHelper.playerOnline(minecartKey.getUsername()) &&
-                            PlayerHelper.playerTimeOnline(minecartKey.getUsername()) > Minecart.instance.TIME_PREVENT_LOGIN_DELIVERY
-                    )
+                minecartKey.getDeliveryAutomaitc() == AutomaticDelivery.ANYTIME || (
+                    !Minecart.instance.preventLoginDelivery &&
+                    PlayerHelper.playerOnline(minecartKey.getUsername())
+                ) || (
+                    Minecart.instance.preventLoginDelivery &&
+                    PlayerHelper.playerOnline(minecartKey.getUsername()) &&
+                    PlayerHelper.playerTimeOnline(minecartKey.getUsername()) > Minecart.instance.TIME_PREVENT_LOGIN_DELIVERY
+                )
             ) {
                 tempMinecartKeys.add(minecartKey);
             }
