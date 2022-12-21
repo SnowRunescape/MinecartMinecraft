@@ -8,11 +8,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.minecart.commands.MainCommand;
+import br.com.minecart.helpers.PlayerHelper;
 import br.com.minecart.listeners.Playerlistener;
 
 public class Minecart extends JavaPlugin
 {
-    public final String VERSION = "2.3.0";
+    public final String VERSION = "2.3.1";
     public final int TIME_PREVENT_LOGIN_DELIVERY = 120;
 
     public YamlConfiguration ResourceMessage;
@@ -66,9 +67,7 @@ public class Minecart extends JavaPlugin
 
     private void loadCooldownToPlayersOnline()
     {
-        Player[] players = getServer().getOnlinePlayers();
-
-        for (Player player : players) {
+        for (Player player : PlayerHelper.getPlayersOnline()) {
             String username = player.getName().toLowerCase();
             this.cooldown.put(username, System.currentTimeMillis());
         }
