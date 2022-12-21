@@ -139,8 +139,8 @@ public class MinecartAPI extends JavaPlugin
     {
         Map<String, String> params = new LinkedHashMap<String, String>();
 
-        for (int id : ids) {
-            params.put("products[]", String.valueOf(id));
+        for (int i = 0; i < ids.length; i++) {
+            params.put("products[" + i + "]", String.valueOf(ids[i]));
         }
 
         try {
