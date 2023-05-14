@@ -8,8 +8,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.google.common.collect.Maps;
-
 import br.com.minecart.Cooldown;
 import br.com.minecart.utilities.Messaging;
 
@@ -19,7 +17,7 @@ public class MainCommand implements CommandExecutor
 
     private static HashMap<Player, Cooldown> cooldown = new HashMap<Player, Cooldown>();
 
-    private static Map<String, CommandExecutor> CommandMap = Maps.newHashMap();
+    private static Map<String, CommandExecutor> CommandMap = new HashMap<String, CommandExecutor>();
 
     public MainCommand()
     {
@@ -58,11 +56,10 @@ public class MainCommand implements CommandExecutor
             if (this.inCooldown(player, commandLabel)) {
                 player.sendMessage(Messaging.format("error.cooldown", true, true));
                 return false;
-            } else {
-                this.addCooldown(player, commandLabel);
-
-                return command.onCommand(sender, cmd, commandLabel, args);
             }
+
+            this.addCooldown(player, commandLabel);
+            return command.onCommand(sender, cmd, commandLabel, args);
         }
 
         return true;
