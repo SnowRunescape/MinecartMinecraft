@@ -13,7 +13,7 @@ import br.com.minecart.listeners.Playerlistener;
 
 public class Minecart extends JavaPlugin
 {
-    public final String VERSION = "2.3.1";
+    public final String VERSION = "2.3.2";
     public final int TIME_PREVENT_LOGIN_DELIVERY = 120;
 
     public YamlConfiguration ResourceMessage;
