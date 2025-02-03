@@ -152,6 +152,41 @@ public class MinecartAPI extends JavaPlugin
         return false;
     }
 
+    public static ArrayList<MinecartPurchasePlayer> purchases()
+    {
+        return Cache.fetch("minecart_purchases", () -> {
+            try {
+                return MinecartAPI.fetchPurchases();
+            } catch (HttpRequestException e) { }
+
+            return null;
+        }, Cache.TTL_5_MIN);
+    }
+
+    private static ArrayList<MinecartPurchasePlayer> fetchPurchases() throws HttpRequestException
+    {
+        ArrayList<MinecartPurchasePlayer> minecartPlayers = new ArrayList<MinecartPurchasePlayer>();
+
+        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/widgets/purchases", null);
+
+        if (response.responseCode != 200) {
+            throw new HttpRequestException(response);
+        }
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray jsonObject = jsonParser.parse(response.response).getAsJsonArray();
+
+        for (JsonElement product : jsonObject) {
+            JsonObject productObj = product.getAsJsonObject();
+            String player = productObj.get("buyer").getAsString();
+            String amount = productObj.get("amount").getAsString();
+
+            minecartPlayers.add(new MinecartPurchasePlayer(player, amount));
+        }
+
+        return minecartPlayers;
+    }
+
     public static void processHttpError(Player player, HttpResponse response)
     {
         String message = MinecartAPI.messageHttpError(player, response);
