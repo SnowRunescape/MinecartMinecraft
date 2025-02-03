@@ -31,7 +31,6 @@ public class AutomaticDelivery
             }
         } catch (HttpRequestException e) {
             String message = MinecartAPI.messageHttpError(Minecart.instance.getServer().getConsoleSender(), e.getResponse());
-
             Bukkit.getConsoleSender().sendMessage(message);
         }
     }
@@ -39,13 +38,13 @@ public class AutomaticDelivery
     private void executeCommands(MinecartKey minecartKey)
     {
         for (final String command : minecartKey.getCommands()) {
-            Bukkit.getScheduler().runTask(Minecart.instance, new BukkitRunnable() {
+            new BukkitRunnable() {
                 public void run() {
                     if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
                         LOGStorage.executeCommand(command);
                     }
                 }
-            });
+            }.runTask(Minecart.instance);
         }
     }
 }
