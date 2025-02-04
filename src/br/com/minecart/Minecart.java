@@ -90,6 +90,8 @@ public class Minecart extends JavaPlugin
 
     public void loadConfigs()
     {
+        this.loadMessages();
+
         this.MinecartAutorization = getConfig().getString("Minecart.ShopKey", "");
         this.MinecartShopServer = getConfig().getString("Minecart.ShopServer", "");
         this.preventLoginDelivery = getConfig().getBoolean("config.preventLoginDelivery", true);
