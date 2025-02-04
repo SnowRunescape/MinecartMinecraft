@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 
 import br.com.minecart.Minecart;
 import br.com.minecart.MinecartAPI;
-import br.com.minecart.MinecartCash;
+import br.com.minecart.entities.MinecartCash;
 import br.com.minecart.storage.LOGStorage;
 import br.com.minecart.utilities.HttpRequestException;
 import br.com.minecart.utilities.Messaging;

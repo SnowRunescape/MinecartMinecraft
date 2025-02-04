@@ -1,4 +1,4 @@
-package br.com.minecart;
+package br.com.minecart.entities;
 
 public class MinecartPurchasePlayer
 {

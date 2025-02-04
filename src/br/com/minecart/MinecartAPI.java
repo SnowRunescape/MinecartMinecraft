@@ -13,6 +13,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import br.com.minecart.entities.MinecartCash;
+import br.com.minecart.entities.MinecartKey;
+import br.com.minecart.entities.MinecartPurchasePlayer;
 import br.com.minecart.utilities.HttpRequest;
 import br.com.minecart.utilities.HttpRequestException;
 import br.com.minecart.utilities.HttpResponse;
@@ -151,19 +154,8 @@ public class MinecartAPI extends JavaPlugin
 
         return false;
     }
-
-    public static ArrayList<MinecartPurchasePlayer> purchases()
-    {
-        return Cache.fetch("minecart_purchases", () -> {
-            try {
-                return MinecartAPI.fetchPurchases();
-            } catch (HttpRequestException e) { }
-
-            return null;
-        }, Cache.TTL_5_MIN);
-    }
-
-    private static ArrayList<MinecartPurchasePlayer> fetchPurchases() throws HttpRequestException
+    
+    public static ArrayList<MinecartPurchasePlayer> purchases() throws HttpRequestException
     {
         ArrayList<MinecartPurchasePlayer> minecartPlayers = new ArrayList<MinecartPurchasePlayer>();
 

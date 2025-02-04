@@ -1,6 +1,7 @@
 package br.com.minecart;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -9,9 +10,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.minecart.commands.MainCommand;
+import br.com.minecart.entities.MinecartPurchasePlayer;
 import br.com.minecart.expansion.PurchasesExpansion;
 import br.com.minecart.helpers.PlayerHelper;
 import br.com.minecart.listeners.Playerlistener;
+import br.com.minecart.scheduler.Scheduler;
+import br.com.minecart.scheduler.sources.AutomaticDelivery;
+import br.com.minecart.scheduler.sources.SyncPurchase;
 
 public class Minecart extends JavaPlugin
 {
@@ -26,6 +31,8 @@ public class Minecart extends JavaPlugin
     public String MinecartShopServer;
 
     public boolean preventLoginDelivery;
+
+    public ArrayList<MinecartPurchasePlayer> purchasePlayers = new ArrayList<MinecartPurchasePlayer>();
 
     public HashMap<String, Long> cooldown = new HashMap<String, Long>();
 
@@ -51,7 +58,8 @@ public class Minecart extends JavaPlugin
 
         getServer().getPluginManager().registerEvents(new Playerlistener(), this);
 
-        new Scheduler().runTaskTimerAsynchronously(this, MinecartAPI.DELAY, MinecartAPI.DELAY);
+        new Scheduler(new AutomaticDelivery()).runTaskTimerAsynchronously(this, AutomaticDelivery.DELAY, AutomaticDelivery.DELAY);
+        new Scheduler(new SyncPurchase()).runTaskTimerAsynchronously(this, 0, SyncPurchase.DELAY);
     }
 
     private void loadMessages()
