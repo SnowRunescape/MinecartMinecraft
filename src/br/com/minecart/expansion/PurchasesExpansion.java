@@ -37,6 +37,8 @@ public class PurchasesExpansion extends PlaceholderExpansion
                 if (index >= 0 && index < minecartKeys.size()) {
                     return minecartKeys.get(index).player;
                 }
+
+                return Minecart.instance.ResourceMessage.getString("error.not-defined");
             }
 
             if (params.matches("purchases_\\d+_amount")) {
@@ -44,6 +46,8 @@ public class PurchasesExpansion extends PlaceholderExpansion
                 if (index >= 0 && index < minecartKeys.size()) {
                     return minecartKeys.get(index).amount;
                 }
+
+                return Minecart.instance.ResourceMessage.getString("error.not-defined");
             }
         }
 

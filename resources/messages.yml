@@ -21,3 +21,4 @@ error:
   inform-key: '&7Informe a &6&lKEY&7. &c/resgatarkey <key>'
   active-key: '&7Ocorreu um erro ao resgatar o produto, tente novamente!'
   invalid-key: '&7A key que você tentou resgatar é invalida!'
+  not-defined: 'Não definido'
