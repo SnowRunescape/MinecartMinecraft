@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import br.com.minecart.Minecart;
 import br.com.minecart.MinecartAPI;
-import br.com.minecart.MinecartKey;
+import br.com.minecart.entities.MinecartKey;
 import br.com.minecart.utilities.Messaging;
 
 public class MyKeys implements CommandExecutor

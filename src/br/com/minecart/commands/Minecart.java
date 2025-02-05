@@ -41,6 +41,7 @@ public class Minecart implements CommandExecutor
         sender.sendMessage("§9[Minecart] §fConfigurações recarregadas com sucesso");
 
         br.com.minecart.Minecart.instance.reloadConfig();
+        br.com.minecart.Minecart.instance.loadConfigs();
 
         return true;
     }

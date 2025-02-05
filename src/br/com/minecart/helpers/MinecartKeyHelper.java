@@ -2,9 +2,9 @@ package br.com.minecart.helpers;
 
 import java.util.ArrayList;
 
-import br.com.minecart.AutomaticDelivery;
 import br.com.minecart.Minecart;
-import br.com.minecart.MinecartKey;
+import br.com.minecart.entities.MinecartKey;
+import br.com.minecart.scheduler.sources.AutomaticDelivery;
 
 public class MinecartKeyHelper
 {

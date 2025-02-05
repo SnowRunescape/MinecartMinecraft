@@ -13,6 +13,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import br.com.minecart.entities.MinecartCash;
+import br.com.minecart.entities.MinecartKey;
+import br.com.minecart.entities.MinecartPurchasePlayer;
 import br.com.minecart.utilities.HttpRequest;
 import br.com.minecart.utilities.HttpRequestException;
 import br.com.minecart.utilities.HttpResponse;
@@ -150,6 +153,30 @@ public class MinecartAPI extends JavaPlugin
         } catch (HttpRequestException e) {}
 
         return false;
+    }
+    
+    public static ArrayList<MinecartPurchasePlayer> purchases() throws HttpRequestException
+    {
+        ArrayList<MinecartPurchasePlayer> minecartPlayers = new ArrayList<MinecartPurchasePlayer>();
+
+        HttpResponse response = HttpRequest.httpRequest(MinecartAPI.URL + "/shop/widgets/purchases", null);
+
+        if (response.responseCode != 200) {
+            throw new HttpRequestException(response);
+        }
+
+        JsonParser jsonParser = new JsonParser();
+        JsonArray jsonObject = jsonParser.parse(response.response).getAsJsonArray();
+
+        for (JsonElement product : jsonObject) {
+            JsonObject productObj = product.getAsJsonObject();
+            String player = productObj.get("buyer").getAsString();
+            String amount = productObj.get("amount").getAsString();
+
+            minecartPlayers.add(new MinecartPurchasePlayer(player, amount));
+        }
+
+        return minecartPlayers;
     }
 
     public static void processHttpError(Player player, HttpResponse response)

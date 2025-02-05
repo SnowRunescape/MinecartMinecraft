@@ -1,10 +1,11 @@
 name: Minecart
-version: 2.3.2
+version: 2.4.0
 description: plugin responsible for managing the payment orders made by the Minecart
-author: [SnowRunescape]
+author: SnowRunescape
 website: https://minecart.com.br
 
 main: br.com.minecart.Minecart
+softdepend: [PlaceholderAPI]
 
 commands:
     minecart:

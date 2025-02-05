@@ -1,19 +1,26 @@
 package br.com.minecart;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.minecart.commands.MainCommand;
+import br.com.minecart.entities.MinecartPurchasePlayer;
+import br.com.minecart.expansion.PurchasesExpansion;
 import br.com.minecart.helpers.PlayerHelper;
 import br.com.minecart.listeners.Playerlistener;
+import br.com.minecart.scheduler.Scheduler;
+import br.com.minecart.scheduler.sources.AutomaticDelivery;
+import br.com.minecart.scheduler.sources.SyncPurchase;
 
 public class Minecart extends JavaPlugin
 {
-    public final String VERSION = "2.3.2";
+    public final String VERSION = "2.4.0";
     public final int TIME_PREVENT_LOGIN_DELIVERY = 120;
 
     public YamlConfiguration ResourceMessage;
@@ -24,6 +31,8 @@ public class Minecart extends JavaPlugin
     public String MinecartShopServer;
 
     public boolean preventLoginDelivery;
+
+    public ArrayList<MinecartPurchasePlayer> purchasePlayers = new ArrayList<MinecartPurchasePlayer>();
 
     public HashMap<String, Long> cooldown = new HashMap<String, Long>();
 
@@ -37,10 +46,8 @@ public class Minecart extends JavaPlugin
 
         this.loadMessages();
         this.loadCooldownToPlayersOnline();
-
-        this.MinecartAutorization = getConfig().getString("Minecart.ShopKey", "");
-        this.MinecartShopServer = getConfig().getString("Minecart.ShopServer", "");
-        this.preventLoginDelivery = getConfig().getBoolean("config.preventLoginDelivery", true);
+        this.loadPlaceholderAPI();
+        this.loadConfigs();
 
         MainCommand MainCommand = new MainCommand();
 
@@ -51,7 +58,8 @@ public class Minecart extends JavaPlugin
 
         getServer().getPluginManager().registerEvents(new Playerlistener(), this);
 
-        new Scheduler().runTaskTimerAsynchronously(this, MinecartAPI.DELAY, MinecartAPI.DELAY);
+        new Scheduler(new AutomaticDelivery()).runTaskTimerAsynchronously(this, AutomaticDelivery.DELAY, AutomaticDelivery.DELAY);
+        new Scheduler(new SyncPurchase()).runTaskTimerAsynchronously(this, 0, SyncPurchase.DELAY);
     }
 
     private void loadMessages()
@@ -71,5 +79,21 @@ public class Minecart extends JavaPlugin
             String username = player.getName().toLowerCase();
             this.cooldown.put(username, System.currentTimeMillis());
         }
+    }
+
+    private void loadPlaceholderAPI()
+    {
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new PurchasesExpansion().register();
+        }
+    }
+
+    public void loadConfigs()
+    {
+        this.loadMessages();
+
+        this.MinecartAutorization = getConfig().getString("Minecart.ShopKey", "");
+        this.MinecartShopServer = getConfig().getString("Minecart.ShopServer", "");
+        this.preventLoginDelivery = getConfig().getBoolean("config.preventLoginDelivery", true);
     }
 }
