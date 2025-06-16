@@ -32,6 +32,8 @@ public class Minecart extends JavaPlugin
 
     public boolean preventLoginDelivery;
 
+    public int delayExecuteCommands;
+
     public ArrayList<MinecartPurchasePlayer> purchasePlayers = new ArrayList<MinecartPurchasePlayer>();
 
     public HashMap<String, Long> cooldown = new HashMap<String, Long>();
@@ -95,5 +97,6 @@ public class Minecart extends JavaPlugin
         this.MinecartAutorization = getConfig().getString("Minecart.ShopKey", "");
         this.MinecartShopServer = getConfig().getString("Minecart.ShopServer", "");
         this.preventLoginDelivery = getConfig().getBoolean("config.preventLoginDelivery", true);
+        this.delayExecuteCommands = getConfig().getInt("config.delayExecuteCommands", 1);
     }
 }

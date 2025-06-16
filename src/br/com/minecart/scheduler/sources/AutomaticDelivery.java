@@ -1,6 +1,8 @@
 package br.com.minecart.scheduler.sources;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -32,25 +34,33 @@ public class AutomaticDelivery implements SchedulerInterface
 
             MinecartAPI.deliveryConfirm(MinecartKeyHelper.getMinecartKeyIds(minecartKeys));
 
+            List<String> commands = new ArrayList<>();
+
             for (MinecartKey minecartKey : minecartKeys) {
-                this.executeCommands(minecartKey);
+                Collections.addAll(commands, minecartKey.getCommands());
             }
+
+            this.executeCommands(commands);
         } catch (HttpRequestException e) {
             String message = MinecartAPI.messageHttpError(Minecart.instance.getServer().getConsoleSender(), e.getResponse());
             Bukkit.getConsoleSender().sendMessage(message);
         }
     }
 
-    private void executeCommands(MinecartKey minecartKey)
+    private void executeCommands(List<String> commands)
     {
-        for (final String command : minecartKey.getCommands()) {
+        long delay = 0L;
+
+        for (final String command : commands) {
             new BukkitRunnable() {
                 public void run() {
                     if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
                         LOGStorage.executeCommand(command);
                     }
                 }
-            }.runTask(Minecart.instance);
+            }.runTaskLater(Minecart.instance, delay);
+
+            delay += Minecart.instance.delayExecuteCommands * 1L;
         }
     }
 }
