@@ -20,7 +20,7 @@ import br.com.minecart.scheduler.sources.SyncPurchase;
 
 public class Minecart extends JavaPlugin
 {
-    public final String VERSION = "2.4.0";
+    public final String VERSION = "2.5.0";
     public final int TIME_PREVENT_LOGIN_DELIVERY = 120;
 
     public YamlConfiguration ResourceMessage;
@@ -31,6 +31,8 @@ public class Minecart extends JavaPlugin
     public String MinecartShopServer;
 
     public boolean preventLoginDelivery;
+
+    public int delayExecuteCommands;
 
     public ArrayList<MinecartPurchasePlayer> purchasePlayers = new ArrayList<MinecartPurchasePlayer>();
 
@@ -95,5 +97,6 @@ public class Minecart extends JavaPlugin
         this.MinecartAutorization = getConfig().getString("Minecart.ShopKey", "");
         this.MinecartShopServer = getConfig().getString("Minecart.ShopServer", "");
         this.preventLoginDelivery = getConfig().getBoolean("config.preventLoginDelivery", true);
+        this.delayExecuteCommands = getConfig().getInt("config.delayExecuteCommands", 1);
     }
 }
