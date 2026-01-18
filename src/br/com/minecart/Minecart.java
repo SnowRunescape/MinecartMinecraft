@@ -9,7 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.minecart.commands.MainCommand;
+import br.com.minecart.core.CommandFailureLogger;
 import br.com.minecart.core.PlayerSessionManager;
+import br.com.minecart.core.config.MinecartCoreConfig;
 import br.com.minecart.core.entities.PurchasePlayer;
 import br.com.minecart.expansion.PurchasesExpansion;
 import br.com.minecart.helpers.PlayerHelper;
@@ -48,6 +50,15 @@ public class Minecart extends JavaPlugin
         this.loadCooldownToPlayersOnline();
         this.loadPlaceholderAPI();
         this.loadConfigs();
+
+        MinecartCoreConfig.configure(
+            VERSION,
+            "Minecraft",
+            this.MinecartAutorization,
+            this.MinecartShopServer
+        );
+
+        CommandFailureLogger.setLogPath(getDataFolder().getPath());
 
         MainCommand MainCommand = new MainCommand();
 
