@@ -1,0 +1,72 @@
+plugins {
+    id 'java'
+    id 'com.gradleup.shadow' version '8.3.0'
+}
+
+group = 'br.com.minecart'
+version = '3.0.0'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(20)
+    }
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+dependencies {
+    compileOnly files('libs/server.jar')
+    compileOnly files('libs/placeholder-api.jar')
+
+    implementation files('libs/gson.jar')
+    implementation files('libs/minecart-core.jar')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src'
+        }
+        resources {
+            srcDir 'resources'
+        }
+    }
+}
+
+jar {
+    archiveBaseName = 'minecart'
+    archiveVersion = version
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+shadowJar {
+    archiveBaseName = 'minecart'
+    archiveVersion = version
+    archiveClassifier = ''
+
+    configurations = [project.configurations.runtimeClasspath]
+
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    exclude 'META-INF/*.SF'
+    exclude 'META-INF/*.DSA'
+    exclude 'META-INF/*.RSA'
+
+    mergeServiceFiles()
+
+    doFirst {
+        delete file("${buildDir}/libs/minecart-${version}.jar")
+    }
+}
+
+build.dependsOn shadowJar
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
