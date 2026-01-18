@@ -1,19 +1,18 @@
 package br.com.minecart.scheduler.sources;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import br.com.minecart.Minecart;
-import br.com.minecart.MinecartAPI;
-import br.com.minecart.entities.MinecartKey;
+import br.com.minecart.MinecartHttpResponseTranslateMessage;
+import br.com.minecart.core.CommandFailureLogger;
+import br.com.minecart.core.MinecartAPI;
+import br.com.minecart.core.entities.Key;
+import br.com.minecart.core.utilities.http.HttpRequestException;
 import br.com.minecart.helpers.MinecartKeyHelper;
 import br.com.minecart.scheduler.SchedulerInterface;
-import br.com.minecart.storage.LOGStorage;
-import br.com.minecart.utilities.HttpRequestException;
 
 public class AutomaticDelivery implements SchedulerInterface
 {
@@ -26,36 +25,32 @@ public class AutomaticDelivery implements SchedulerInterface
     public void run()
     {
         try {
-            ArrayList<MinecartKey> minecartKeys = MinecartKeyHelper.filterByAutomaticDelivery(MinecartAPI.deliveryPending());
+            ArrayList<Key> keys = MinecartKeyHelper.filterByAutomaticDelivery(MinecartAPI.deliveryPending());
 
-            if (minecartKeys.isEmpty()) {
+            if (keys.isEmpty()) {
                 return;
             }
 
-            MinecartAPI.deliveryConfirm(MinecartKeyHelper.getMinecartKeyIds(minecartKeys));
+            MinecartAPI.deliveryConfirm(keys);
 
-            List<String> commands = new ArrayList<>();
-
-            for (MinecartKey minecartKey : minecartKeys) {
-                Collections.addAll(commands, minecartKey.getCommands());
+            for (Key key : keys) {
+                this.executeCommands(key);
             }
-
-            this.executeCommands(commands);
         } catch (HttpRequestException e) {
-            String message = MinecartAPI.messageHttpError(Minecart.instance.getServer().getConsoleSender(), e.getResponse());
+            String message = MinecartHttpResponseTranslateMessage.messageHttpError(Minecart.instance.getServer().getConsoleSender(), e.getResponse());
             Bukkit.getConsoleSender().sendMessage(message);
         }
     }
 
-    private void executeCommands(List<String> commands)
+    private void executeCommands(Key key)
     {
         long delay = 0L;
 
-        for (final String command : commands) {
+        for (final String command : key.getCommands()) {
             new BukkitRunnable() {
                 public void run() {
                     if (!Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command)) {
-                        LOGStorage.executeCommand(command);
+                        CommandFailureLogger.executeCommand(command);
                     }
                 }
             }.runTaskLater(Minecart.instance, delay);

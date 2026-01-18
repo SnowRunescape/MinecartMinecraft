@@ -1,9 +1,9 @@
 package br.com.minecart.scheduler.sources;
 
 import br.com.minecart.Minecart;
-import br.com.minecart.MinecartAPI;
+import br.com.minecart.core.MinecartAPI;
+import br.com.minecart.core.utilities.http.HttpRequestException;
 import br.com.minecart.scheduler.SchedulerInterface;
-import br.com.minecart.utilities.HttpRequestException;
 
 public class SyncPurchase implements SchedulerInterface
 {
