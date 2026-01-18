@@ -5,21 +5,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import br.com.minecart.Minecart;
+import br.com.minecart.core.PlayerSessionManager;
 
 public class Playerlistener implements Listener
 {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        String username = event.getPlayer().getName().toLowerCase();
-        Minecart.instance.cooldown.put(username, System.currentTimeMillis());
+        PlayerSessionManager.getInstance().onJoin(event.getPlayer().getName());
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        String username = event.getPlayer().getName().toLowerCase();
-        Minecart.instance.cooldown.remove(username);
+        PlayerSessionManager.getInstance().onQuit(event.getPlayer().getName());
     }
 }

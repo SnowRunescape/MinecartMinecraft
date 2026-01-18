@@ -8,8 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import br.com.minecart.Minecart;
-import br.com.minecart.MinecartAPI;
-import br.com.minecart.entities.MinecartKey;
+import br.com.minecart.core.MinecartAPI;
+import br.com.minecart.core.entities.Key;
 import br.com.minecart.utilities.Messaging;
 
 public class MyKeys implements CommandExecutor
@@ -19,18 +19,18 @@ public class MyKeys implements CommandExecutor
         Player player = (Player) sender;
 
         try {
-            ArrayList<MinecartKey> minecartKeys = MinecartAPI.myKeys(player);
+            ArrayList<Key> keys = MinecartAPI.myKeys(player.getName());
 
             player.sendMessage(Messaging.format("success.player-list-keys-title", false, true));
             player.sendMessage("");
 
-            if (minecartKeys.isEmpty()) {
+            if (keys.isEmpty()) {
                 player.sendMessage(Messaging.format("error.player-dont-have-key", false, true));
             } else {
-                for (MinecartKey minecartKey : minecartKeys) {
+                for (Key key : keys) {
                     String msg = Minecart.instance.ResourceMessage.getString("success.player-list-keys-key");
 
-                    msg = this.parseText(msg, minecartKey);
+                    msg = this.parseText(msg, key);
 
                     player.sendMessage(Messaging.format(msg, false, false));
                 }
@@ -44,10 +44,10 @@ public class MyKeys implements CommandExecutor
         return false;
     }
 
-    private String parseText(String text, MinecartKey minecartKey)
+    private String parseText(String text, Key key)
     {
-        text = text.replace("{key.code}", minecartKey.getKey());
-        text = text.replace("{key.product_name}", minecartKey.getProductName());
+        text = text.replace("{key.code}", key.getKey());
+        text = text.replace("{key.product_name}", key.getProductName());
 
         return text;
     }

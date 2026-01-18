@@ -3,45 +3,31 @@ package br.com.minecart.helpers;
 import java.util.ArrayList;
 
 import br.com.minecart.Minecart;
-import br.com.minecart.entities.MinecartKey;
+import br.com.minecart.core.PlayerSessionManager;
+import br.com.minecart.core.entities.Key;
 import br.com.minecart.scheduler.sources.AutomaticDelivery;
 
 public class MinecartKeyHelper
 {
-    public static ArrayList<MinecartKey> filterByAutomaticDelivery(ArrayList<MinecartKey> minecartKeys)
+    public static ArrayList<Key> filterByAutomaticDelivery(ArrayList<Key> keys)
     {
-        ArrayList<MinecartKey> tempMinecartKeys = new ArrayList<MinecartKey>();
+        ArrayList<Key> tempMinecartKeys = new ArrayList<Key>();
 
-        for (MinecartKey minecartKey : minecartKeys) {
+        for (Key key : keys) {
             if (
-                minecartKey.getDeliveryAutomaitc() == AutomaticDelivery.ANYTIME || (
-                    !Minecart.instance.preventLoginDelivery &&
-                    PlayerHelper.playerOnline(minecartKey.getUsername())
+                    key.getDeliveryAutomaitc() == AutomaticDelivery.ANYTIME || (
+                    !Minecart.instance.preventLoginDelivery
+                    && PlayerHelper.playerOnline(key.getUsername())
                 ) || (
-                    Minecart.instance.preventLoginDelivery &&
-                    PlayerHelper.playerOnline(minecartKey.getUsername()) &&
-                    PlayerHelper.playerTimeOnline(minecartKey.getUsername()) > Minecart.instance.TIME_PREVENT_LOGIN_DELIVERY
+                    Minecart.instance.preventLoginDelivery
+                    && PlayerHelper.playerOnline(key.getUsername())
+                    && PlayerSessionManager.getInstance().getSessionDuration(key.getUsername()) > Minecart.instance.TIME_PREVENT_LOGIN_DELIVERY
                 )
             ) {
-                tempMinecartKeys.add(minecartKey);
+                tempMinecartKeys.add(key);
             }
         }
 
         return tempMinecartKeys;
-    }
-
-    public static int[] getMinecartKeyIds(ArrayList<MinecartKey> minecartKeys)
-    {
-        int counter = 0;
-        int quantity = minecartKeys.size();
-
-        int[] ids = new int[quantity];
-
-        for (MinecartKey minecartKey : minecartKeys) {
-            ids[counter] = minecartKey.getId();
-            counter++;
-        }
-
-        return ids;
     }
 }

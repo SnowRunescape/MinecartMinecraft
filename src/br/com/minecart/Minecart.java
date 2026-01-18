@@ -2,7 +2,6 @@ package br.com.minecart;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -10,7 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.minecart.commands.MainCommand;
-import br.com.minecart.entities.MinecartPurchasePlayer;
+import br.com.minecart.core.PlayerSessionManager;
+import br.com.minecart.core.entities.PurchasePlayer;
 import br.com.minecart.expansion.PurchasesExpansion;
 import br.com.minecart.helpers.PlayerHelper;
 import br.com.minecart.listeners.Playerlistener;
@@ -20,7 +20,7 @@ import br.com.minecart.scheduler.sources.SyncPurchase;
 
 public class Minecart extends JavaPlugin
 {
-    public final String VERSION = "2.5.0";
+    public final String VERSION = "3.0.0";
     public final int TIME_PREVENT_LOGIN_DELIVERY = 120;
 
     public YamlConfiguration ResourceMessage;
@@ -34,9 +34,7 @@ public class Minecart extends JavaPlugin
 
     public int delayExecuteCommands;
 
-    public ArrayList<MinecartPurchasePlayer> purchasePlayers = new ArrayList<MinecartPurchasePlayer>();
-
-    public HashMap<String, Long> cooldown = new HashMap<String, Long>();
+    public ArrayList<PurchasePlayer> purchasePlayers = new ArrayList<PurchasePlayer>();
 
     public void onEnable()
     {
@@ -78,8 +76,7 @@ public class Minecart extends JavaPlugin
     private void loadCooldownToPlayersOnline()
     {
         for (Player player : PlayerHelper.getPlayersOnline()) {
-            String username = player.getName().toLowerCase();
-            this.cooldown.put(username, System.currentTimeMillis());
+            PlayerSessionManager.getInstance().onJoin(player.getName());
         }
     }
 
